@@ -1,7 +1,7 @@
 
 
 class Board {
-  constructor() {
+  constructor(values) {
     this.rows = BOARD_ELEMENTS.rows.split('');
     this.cols = BOARD_ELEMENTS.columns.split('');
     this.rs = BOARD_ELEMENTS.row_squares;
@@ -11,6 +11,8 @@ class Board {
     this.column_units = [];
     this.square_units = [];
     this.unit_list = [];
+    this.grid = {};
+    this.values = values;
   }
 
   cross(a, b) {
@@ -21,6 +23,14 @@ class Board {
       })
     });
     return crossed;
+  }
+
+  grid_values() {
+    if (this.values.length === this.boxes.length) {
+      this.boxes.forEach((element, index) => {
+        this.grid[element] = this.values[index];
+      });
+    }
   }
 
   build() {
@@ -53,6 +63,9 @@ class Board {
     // Build unit list
     this.unit_list = this.row_units.concat(this.column_units.concat(this.square_units));
 
-    console.log(this.unit_list);
+    // Build grid
+    this.grid_values();
+
+    return this.grid;
   }
 }
