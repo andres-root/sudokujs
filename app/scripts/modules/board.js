@@ -32,7 +32,7 @@ class Board {
 
       // Populate the grid object
       this.boxes.forEach((element, index) => {
-        this.grid[element] = this.values[index] === '.' ? this.cols : this.values[index];
+        this.grid[element] = this.values[index] === '.' ? this.cols : Array.from(this.values[index]);
       });
     }
   }
@@ -47,13 +47,12 @@ class Board {
     });
 
     // Eliminate invalid values for each unsolved box
-    // solved.forEach((box) => {
-    //   let n = this.grid[box];
-    //   this.peers[box].forEach((peer) => {
-    //     this.grid[peer] = this.grid[peer].splice(this.grid[peer].indexOf(box));
-    //   });
-    // });
-    return 'hey';
+    solved.forEach((box) => {
+      let n = this.grid[box][0];
+      this.peers[box].forEach((peer) => {
+        this.grid[peer] = this.grid[peer].splice(this.grid[peer].indexOf(n));
+      });
+    });
   }
 
   build() {
@@ -106,15 +105,14 @@ class Board {
       let boxes = new Set([s]);
       let difference = new Set([...units].filter(x => !boxes.has(x)));
       this.peers[s] = Array.from(difference);
-      }
     });
 
     // Build grid
     this.grid_values();
 
     // Eliminate invalid values of grid
-    let x = this.eliminate();
+    this.eliminate();
 
-    return x;
+    return this.grid;
   }
 }
