@@ -13,6 +13,7 @@ class Board {
     this.unit_list = [];
     this.grid = {};
     this.values = values;
+    this.units = {};
   }
 
   cross(a, b) {
@@ -27,10 +28,28 @@ class Board {
 
   grid_values() {
     if (this.values.length === this.boxes.length) {
+
+      // Populate the grid object
       this.boxes.forEach((element, index) => {
-        this.grid[element] = this.values[index];
+        this.grid[element] = this.values[index] === '.' ? this.cols : this.values[index];
       });
     }
+  }
+
+  eliminate() {
+    // Get a list of solved boxes
+    let solved = [];
+    Object.keys(this.grid).forEach((box) => {
+      if (this.values[box].length === 1) {
+        solved.push(box);
+      }
+    });
+
+    // Eliminate invalid values for each unsolved box
+    solved.forEach((box) => {
+      let n = this.values[box];
+      this.peersforEach()
+    });
   }
 
   build() {
@@ -62,6 +81,14 @@ class Board {
 
     // Build unit list
     this.unit_list = this.row_units.concat(this.column_units.concat(this.square_units));
+
+    // Build units
+    this.boxes.forEach((s) => {
+      this.unit_list.forEach((u) => {
+
+      })
+      this.units[s] =
+    });
 
     // Build grid
     this.grid_values();
