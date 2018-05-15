@@ -49,8 +49,13 @@ class Board {
     // Eliminate invalid values for each unsolved box
     solved.forEach((box) => {
       let n = this.grid[box][0];
+
       this.peers[box].forEach((peer) => {
-        this.grid[peer] = this.grid[peer].splice(this.grid[peer].indexOf(n));
+        console.log(peer);
+        let index = this.grid[peer].indexOf(n);
+        if (index !== -1) {
+          // this.grid[peer].splice(index, 1);
+        }
       });
     });
   }
@@ -110,9 +115,10 @@ class Board {
     // Build grid
     this.grid_values();
 
+    console.log(this.grid);
     // Eliminate invalid values of grid
     this.eliminate();
+    console.log(this.grid);
 
-    return this.grid;
   }
 }
