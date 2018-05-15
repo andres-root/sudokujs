@@ -37,7 +37,6 @@ class Board {
     }
   }
 
-
   eliminate() {
     // Get a list of solved boxes
     let solved = [];
