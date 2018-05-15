@@ -14,6 +14,7 @@ class Board {
     this.grid = {};
     this.values = values;
     this.units = {};
+    this.peers = {};
   }
 
   cross(a, b) {
@@ -85,14 +86,21 @@ class Board {
     // Build units
     this.boxes.forEach((s) => {
       this.unit_list.forEach((u) => {
-
+        if (u.includes(s)) {
+          if (this.units.hasOwnProperty(s)) {
+            this.units[s].push(u);
+          } else {
+            this.units[s] = [];
+            this.units[s].push(u);
+          }
+        }
       })
-      this.units[s] =
     });
+
 
     // Build grid
     this.grid_values();
 
-    return this.grid;
+    return this.units;
   }
 }
