@@ -55,6 +55,24 @@ class Board {
     });
   }
 
+  only_choice() {
+    this.unit_list.forEach((unit) => {
+      this.cols.forEach((n) => {
+        let boxes = [];
+
+        unit.forEach((box) => {
+          if (this.grid[box].includes(n)) {
+            boxes.push(box);
+          }
+        });
+
+        if (boxes.length === 1) {
+          this.grid[boxes[0]] = n;
+        }
+      });
+    });
+  }
+
   build() {
     // Build boxes
     this.boxes = this.cross(this.rows, this.cols);
@@ -112,6 +130,9 @@ class Board {
 
     // Eliminate invalid values of grid
     this.eliminate();
+
+    // Apply only choice strategy
+    this.only_choice()
     console.log(this.grid);
   }
 }
