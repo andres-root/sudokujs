@@ -1,7 +1,7 @@
 
 
 class Board {
-  constructor(values) {
+  constructor(unsolved) {
     this.rows = BOARD_ELEMENTS.rows.split('');
     this.cols = BOARD_ELEMENTS.columns.split('');
     this.rs = BOARD_ELEMENTS.row_squares;
@@ -12,7 +12,7 @@ class Board {
     this.square_units = [];
     this.unit_list = [];
     this.grid = {};
-    this.values = values;
+    this.unsolved = unsolved;
     this.units = {};
     this.peers = {};
   }
@@ -28,11 +28,11 @@ class Board {
   }
 
   grid_values() {
-    if (this.values.length === this.boxes.length) {
+    if (this.unsolved.length === this.boxes.length) {
 
       // Populate the grid object
       this.boxes.forEach((element, index) => {
-        this.grid[element] = this.values[index] === '.' ? this.cols : Array.from(this.values[index]);
+        this.grid[element] = this.unsolved[index] === '.' ? this.cols : Array.from(this.unsolved[index]);
       });
     }
   }
@@ -45,17 +45,12 @@ class Board {
         solved.push(box);
       }
     });
-
     // Eliminate invalid values for each unsolved box
     solved.forEach((box) => {
       let n = this.grid[box][0];
 
       this.peers[box].forEach((peer) => {
-        console.log(peer);
-        let index = this.grid[peer].indexOf(n);
-        if (index !== -1) {
-          // this.grid[peer].splice(index, 1);
-        }
+          this.grid[peer] = this.grid[peer].join('').replace(n, '').split('');;
       });
     });
   }
@@ -115,10 +110,8 @@ class Board {
     // Build grid
     this.grid_values();
 
-    console.log(this.grid);
     // Eliminate invalid values of grid
     this.eliminate();
     console.log(this.grid);
-
   }
 }
