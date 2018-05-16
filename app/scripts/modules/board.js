@@ -37,96 +37,101 @@ class Board {
     }
   }
 
-  eliminate() {
+  eliminate(grid) {
     // Get a list of solved boxes
     let solved = [];
-    Object.keys(this.grid).forEach((box) => {
-      if (this.grid[box].length === 1) {
+    Object.keys(grid).forEach((box) => {
+      if (grid[box].length === 1) {
         solved.push(box);
       }
     });
     // Eliminate invalid values for each unsolved box
     solved.forEach((box) => {
-      let n = this.grid[box][0];
+      let n = grid[box][0];
 
       this.peers[box].forEach((peer) => {
-        this.grid[peer] = Array.from(this.grid[peer]).join('').replace(n, '').split('');
+        grid[peer] = Array.from(grid[peer]).join('').replace(n, '').split('');
       });
     });
+
+    return grid;
   }
 
-  only_choice() {
+  only_choice(grid) {
     this.unit_list.forEach((unit) => {
       this.cols.forEach((n) => {
         let boxes = [];
 
         unit.forEach((box) => {
-          if (this.grid[box].includes(n)) {
+          if (grid[box].includes(n)) {
             boxes.push(box);
           }
         });
 
         if (boxes.length === 1) {
-          this.grid[boxes[0]] = n;
+          grid[boxes[0]] = n;
         }
       });
     });
+
+    return grid;
   }
 
-  solved_values(limit = 1) {
+  solved_values(grid, limit = 1) {
     let solved = [];
-    Object.keys(this.grid).forEach((box) => {
-      if (this.grid[box].length === limit) {
+    Object.keys(grid).forEach((box) => {
+      if (grid[box].length === limit) {
         solved.push(box);
       }
     });
     return solved;
   }
 
-  reduce_puzzle() {
+  reduce_puzzle(grid) {
     let stalled = false;
     let i = 0;
 
     while (!stalled) {
 
       // Check how many boxes have a determined value
-      let solved_grid_before = this.solved_values().length;
+      let solved_grid_before = this.solved_values(grid).length;
 
       // Use the Eliminate Strategy
-      this.eliminate()
+      grid = this.eliminate(grid)
 
       // Use the Only Choice Strategy
-      this.only_choice()
+      grid = this.only_choice(grid)
 
       // Check how many boxes have a determined value, to compare
-      let solved_grid_after = this.solved_values().length;
+      let solved_grid_after = this.solved_values(grid).length;
 
       // If no new values were added, stop the loop.
       stalled = solved_grid_before === solved_grid_after;
 
       // Sanity check, return False if there is a box with zero available values:
-      if (this.solved_values(0).length > 0) {
+      if (this.solved_values(grid, 0).length > 0) {
         return false;
       }
     }
-    return this.grid;
+    return grid;
   }
 
   search(grid) {
     // reduce the puzzle
-    let values = this.reduce_puzzle();
+    let values = this.reduce_puzzle(grid);
 
     if (!values) {
       return false; // Failed earlier
     }
 
-    if (this.solved_values().length === this.boxes.length) {
+    if (this.solved_values(grid).length === this.boxes.length) {
       return grid; // Solved the sudoku
     }
 
     // Choose one of the unfilled squares with the fewest possibilities
     let unfilled_keys = [];
     let unfilled_values = [];
+
     this.boxes.forEach((s) => {
       if (grid[s].length > 1) {
         unfilled_keys.push(s);
@@ -203,6 +208,9 @@ class Board {
 
     // Build grid
     this.grid_values();
+
+    // Reduce puzzle
+    this.grid = this.reduce_puzzle(this.grid);
 
     // Apply constraint propagation
     this.grid = this.search(this.grid);
