@@ -50,7 +50,7 @@ class Board {
       let n = this.grid[box][0];
 
       this.peers[box].forEach((peer) => {
-          this.grid[peer] = this.grid[peer].join('').replace(n, '').split('');;
+        this.grid[peer] = Array.from(this.grid[peer]).join('').replace(n, '').split('');
       });
     });
   }
@@ -71,6 +71,44 @@ class Board {
         }
       });
     });
+  }
+
+  solved_values(limit = 1) {
+    let solved = [];
+    Object.keys(this.grid).forEach((box) => {
+      if (this.grid[box].length === limit) {
+        solved.push(box);
+      }
+    });
+    return solved;
+  }
+
+  reduce_puzzle() {
+    let stalled = false;
+    let i = 0;
+
+    while (!stalled) {
+
+      // Check how many boxes have a determined value
+      let solved_grid_before = this.solved_values().length;
+
+      // Use the Eliminate Strategy
+      this.eliminate()
+
+      // Use the Only Choice Strategy
+      this.only_choice()
+
+      // Check how many boxes have a determined value, to compare
+      let solved_grid_after = this.solved_values().length;
+
+      // If no new values were added, stop the loop.
+      stalled = solved_grid_before === solved_grid_after;
+
+      // Sanity check, return False if there is a box with zero available values:
+      if (this.solved_values(0).length > 0) {
+        return false;
+      }
+    }
   }
 
   build() {
@@ -128,11 +166,9 @@ class Board {
     // Build grid
     this.grid_values();
 
-    // Eliminate invalid values of grid
-    this.eliminate();
+    // Apply constraint propagation
+    this.reduce_puzzle();
 
-    // Apply only choice strategy
-    this.only_choice()
     console.log(this.grid);
   }
 }
