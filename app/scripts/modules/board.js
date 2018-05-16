@@ -109,6 +109,44 @@ class Board {
         return false;
       }
     }
+    return this.grid;
+  }
+
+  search(grid) {
+    // reduce the puzzle
+    let values = this.reduce_puzzle();
+
+    if (!values) {
+      return false; // Failed earlier
+    }
+
+    if (this.solved_values().length === this.boxes.length) {
+      return grid; // Solved the sudoku
+    }
+
+    // Choose one of the unfilled squares with the fewest possibilities
+    let unfilled_keys = [];
+    let unfilled_values = [];
+    this.boxes.forEach((s) => {
+      if (grid[s].length > 1) {
+        unfilled_keys.push(s);
+        unfilled_values.push(grid[s].length);
+      }
+    });
+
+    let n = Math.min(...unfilled_values);
+    let s = unfilled_keys[unfilled_values.indexOf(n)];
+
+    // Use recurrence to solve each one of the resulting sudokus
+    grid[s].forEach((value) => {
+      let new_sudoku = grid;
+      new_sudoku[s] = value;
+      let attempt = this.search(new_sudoku);
+
+      if (attempt) {
+        return attempt;
+      }
+    });
   }
 
   build() {
@@ -167,8 +205,8 @@ class Board {
     this.grid_values();
 
     // Apply constraint propagation
-    this.reduce_puzzle();
+    this.grid = this.search(this.grid);
 
-    console.log(this.grid);
+    return this.grid;
   }
 }
