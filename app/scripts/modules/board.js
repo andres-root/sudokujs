@@ -140,8 +140,6 @@ class Board {
     var s = Object.keys(unfilled).reduce((a, b) => unfilled[a] < unfilled[b] ? a : b);
     var n = grid[s];
 
-
-
     // Use recurrence to solve each one of the resulting sudokus
     grid[s].forEach((value) => {
       let new_sudoku = Object.assign({}, grid);
