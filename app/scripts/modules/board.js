@@ -89,7 +89,6 @@ class Board {
 
   reduce_puzzle(grid) {
     let stalled = false;
-    let i = 0;
 
     while (!stalled) {
 
@@ -110,7 +109,7 @@ class Board {
 
       // Sanity check, return False if there is a box with zero available values:
       if (this.solved_values(grid, 0).length > 0) {
-        return false;
+        return false; // Failed earlier
       }
     }
     return grid;
@@ -120,29 +119,43 @@ class Board {
     // reduce the puzzle
     let values = this.reduce_puzzle(grid);
 
-    if (!values) {
+    if (values === false) {
       return false; // Failed earlier
     }
 
-    if (this.solved_values(grid).length === this.boxes.length) {
-      return grid; // Solved the sudoku
+    let solved = [];
+    this.boxes.forEach((s) => {
+      solved.push(values[s].length);
+    });
+
+    let all_solved = (value) => {
+      return value === 1;
+    };
+
+    if (solved.every(all_solved)) {
+      return values;
     }
 
     // Choose one of the unfilled squares with the fewest possibilities
     let unfilled = {};
 
     this.boxes.forEach((s) => {
-      if (grid[s].length > 1) {
-        unfilled[s] = grid[s].length
+      if (values[s].length > 1) {
+        unfilled[s] = values[s].length
       }
     });
 
-    var s = Object.keys(unfilled).reduce((a, b) => unfilled[a] < unfilled[b] ? a : b);
-    var n = grid[s];
+    let s = Object.keys(unfilled).reduce((a, b) => {
+      if (unfilled[a] < unfilled[b]) {
+        return a;
+      } else {
+        return b;
+      }
+    });
 
     // Use recurrence to solve each one of the resulting sudokus
-    grid[s].forEach((value) => {
-      let new_sudoku = Object.assign({}, grid);
+    values[s].forEach((value) => {
+      let new_sudoku = Object.assign({}, values);
       new_sudoku[s] = value;
       let attempt = this.search(new_sudoku);
 
