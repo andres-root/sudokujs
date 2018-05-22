@@ -129,22 +129,22 @@ class Board {
     }
 
     // Choose one of the unfilled squares with the fewest possibilities
-    let unfilled_keys = [];
-    let unfilled_values = [];
+    let unfilled = {};
 
     this.boxes.forEach((s) => {
       if (grid[s].length > 1) {
-        unfilled_keys.push(s);
-        unfilled_values.push(grid[s].length);
+        unfilled[s] = grid[s].length
       }
     });
 
-    let n = Math.min(...unfilled_values);
-    let s = unfilled_keys[unfilled_values.indexOf(n)];
+    var s = Object.keys(unfilled).reduce((a, b) => unfilled[a] < unfilled[b] ? a : b);
+    var n = grid[s];
+
+
 
     // Use recurrence to solve each one of the resulting sudokus
     grid[s].forEach((value) => {
-      let new_sudoku = grid;
+      let new_sudoku = Object.assign({}, grid);
       new_sudoku[s] = value;
       let attempt = this.search(new_sudoku);
 
